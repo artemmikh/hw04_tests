@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -28,28 +29,25 @@ class PostCreateFormTests(TestCase):
         # Подготавливаем данные для передачи в форму
         form_data = {
             'text': 'test text',
-            'group': self.group.id
+            'group': self.group.id,
+            'author': self.user
         }
-
+        # создаю пост
         response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
-        new_post = Post.objects.get(id=1)
+        new_post = Post.objects.first()
         # Проверяем, сработал ли редирект
         self.assertRedirects(response, reverse(
             'posts:profile', kwargs={'username': new_post.author})
         )
         # Проверяем, увеличилось ли число постов
         self.assertEqual(Post.objects.count(), tasks_count + 1)
-        # Проверяем, что создалась запись с нашим слагом
-        self.assertTrue(
-            Post.objects.filter(
-                text='test text',
-                group=self.group.id
-            ).exists()
-        )
+        self.assertEqual(form_data['text'], new_post.text)
+        self.assertEqual(self.user, new_post.author)
+        self.assertEqual(self.group, new_post.group)
 
     def test_edit_post(self):
         """Валидная форма измененяет пост в базе данных."""
@@ -64,7 +62,7 @@ class PostCreateFormTests(TestCase):
             follow=True,
         )
         # редактирование поста
-        post = Post.objects.get(id=1)
+        post = Post.objects.first()
         new_form_data = {
             'text': 'new test texst',
             'group': self.group.id
@@ -79,4 +77,19 @@ class PostCreateFormTests(TestCase):
             follow=True,
         )
         modified_post = Post.objects.get(id=1)
-        self.assertEqual(modified_post.text, 'new test texst')
+        self.assertEqual(modified_post.text, new_form_data['text'])
+
+    def test_guest_client_can_not_create_post(self):
+        '''Неавторизованный пользователь не может опубликовать пост.'''
+        form_data = {
+            'text': 'test text',
+            'group': self.group.id
+        }
+        response = self.guest_client.post(
+            reverse('posts:post_create'),
+            data=form_data,
+            follow=True,
+        )
+        login_url = reverse('users:login')
+        create_url = reverse('posts:post_create')
+        self.assertRedirects(response, f'{login_url}?next={create_url}')

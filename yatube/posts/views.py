@@ -1,8 +1,9 @@
-from core.pagination import paginate
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+
+from core.pagination import paginate
 
 from .forms import PostForm
 from .models import Group, Post

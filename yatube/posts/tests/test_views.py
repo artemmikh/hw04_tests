@@ -1,10 +1,13 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Group, Post
 
 User = get_user_model()
+POSTS_PER_PAGE = settings.POSTS_PER_PAGE
 
 
 class PostsPagesTests(TestCase):
@@ -152,12 +155,12 @@ class PaginatorViewsTest(TestCase):
             description='Описание группы',
         )
 
-        for i in range(13):
-            Post.objects.create(
-                author=cls.user,
-                text=f'Пост {i}',
-                group=cls.group
-            )
+        posts = [
+            Post(author=cls.user,
+                 text=f'Пост {i}',
+                 group=cls.group) for i in range(13)
+        ]
+        Post.objects.bulk_create(posts)
 
     def test_first_page_contains_ten_records(self):
         templates_page_names = [
@@ -167,7 +170,7 @@ class PaginatorViewsTest(TestCase):
         ]
         for reverse_name in templates_page_names:
             response = self.client.get(reverse_name)
-            self.assertEqual(len(response.context['page_obj']), 10)
+            self.assertEqual(len(response.context['page_obj']), POSTS_PER_PAGE)
 
     def test_second_page_contains_three_records(self):
         page = '?page=2'
@@ -178,4 +181,7 @@ class PaginatorViewsTest(TestCase):
         ]
         for reverse_name in templates_page_names:
             response = self.client.get(reverse_name)
-            self.assertEqual(len(response.context['page_obj']), 3)
+            self.assertEqual(
+                len(response.context['page_obj']),
+                Post.objects.count() % POSTS_PER_PAGE
+            )
