@@ -30,7 +30,6 @@ class PostCreateFormTests(TestCase):
         form_data = {
             'text': 'test text',
             'group': self.group.id,
-            'author': self.user
         }
         # создаю пост
         response = self.authorized_client.post(
