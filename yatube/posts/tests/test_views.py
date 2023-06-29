@@ -26,6 +26,16 @@ class PostsPagesTests(TestCase):
             text='text',
             group=cls.group,
         )
+        cls.GROUP_REVERSE = reverse('posts:group_list', args=[cls.group.slug])
+        cls.INDEX_REVERSE = reverse('posts:index')
+        cls.PROFILE_REVERSE = reverse('posts:profile', args=[cls.user])
+        cls.POST_DETAIL_REVERSE = reverse(
+            'posts:post_detail', args=[cls.post.id]
+        )
+        cls.POST_CREATE_REVERSE = reverse('posts:post_create')
+        cls.POST_EDIT_REVERSE = reverse(
+            'posts:post_edit', kwargs={'post_id': cls.post.id}
+        )
 
     def setUp(self):
         self.guest_client = Client()
@@ -36,17 +46,12 @@ class PostsPagesTests(TestCase):
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_page_names = {
-            reverse('posts:index'): 'posts/index.html',
-            reverse('posts:group_list',
-                    args=[self.group.slug]): 'posts/group_list.html',
-            reverse('posts:profile',
-                    args=[self.user]): 'posts/profile.html',
-            reverse('posts:post_detail',
-                    args=[self.post.id]): 'posts/post_detail.html',
-            reverse('posts:post_create'): 'posts/post_create.html',
-            reverse(
-                'posts:post_edit', kwargs={'post_id': self.post.id}
-            ): 'posts/post_create.html'
+            self.INDEX_REVERSE: 'posts/index.html',
+            self.GROUP_REVERSE: 'posts/group_list.html',
+            self.PROFILE_REVERSE: 'posts/profile.html',
+            self.POST_DETAIL_REVERSE: 'posts/post_detail.html',
+            self.POST_CREATE_REVERSE: 'posts/post_create.html',
+            self.POST_EDIT_REVERSE: 'posts/post_create.html'
         }
 
         for reverse_name, template in templates_page_names.items():
@@ -56,7 +61,7 @@ class PostsPagesTests(TestCase):
 
     def test_index_page_show_correct_context(self):
         """Шаблон index.html сформирован с правильным контекстом."""
-        response = self.guest_client.get(reverse('posts:index'))
+        response = self.guest_client.get(self.INDEX_REVERSE)
         test_post = response.context['page_obj'][0]
         self.assertEqual(test_post, self.post)
         self.assertEqual(test_post.author, self.post.author)
@@ -67,7 +72,7 @@ class PostsPagesTests(TestCase):
         """Шаблон group_list сформирован с правильным контекстом."""
 
         response = self.guest_client.get(
-            reverse('posts:group_list', kwargs={'slug': self.group.slug})
+            self.GROUP_REVERSE
         )
         first_object = response.context['page_obj'][0]
         second_object = response.context['group']
@@ -76,16 +81,13 @@ class PostsPagesTests(TestCase):
 
     def test_profile_page_show_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
-        response = self.authorized_client.get(
-            reverse('posts:profile', kwargs={'username': self.post.author}))
+        response = self.authorized_client.get(self.PROFILE_REVERSE)
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, self.post.text)
 
     def test_post_detail_page_show_correct_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
-        response = self.guest_client.get(
-            reverse('posts:post_detail', args=[self.post.id])
-        )
+        response = self.guest_client.get(self.POST_DETAIL_REVERSE)
         test_post = response.context['post_pk']
         self.assertEqual(test_post, self.post)
         self.assertEqual(test_post.author, self.post.author)
@@ -93,7 +95,7 @@ class PostsPagesTests(TestCase):
 
     def test_post_create_page_show_correct_context(self):
         """Шаблон post_create сформирован с правильным контекстом."""
-        response = self.authorized_client.get(reverse('posts:post_create'))
+        response = self.authorized_client.get(self.POST_CREATE_REVERSE)
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -105,9 +107,7 @@ class PostsPagesTests(TestCase):
 
     def test_post_edit_page_show_correct_context(self):
         """Шаблон post_edit сформирован с правильным контекстом."""
-        response = self.authorized_client.get(
-            reverse('posts:post_edit', kwargs={'post_id': self.post.id})
-        )
+        response = self.authorized_client.get(self.POST_EDIT_REVERSE)
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -122,13 +122,13 @@ class PostsPagesTests(TestCase):
         на главной странице сайта,
         на странице выбранной группы,
         в профайле пользователя."""
-        response_index = self.authorized_client.get(reverse('posts:index'))
+        response_index = self.authorized_client.get(self.INDEX_REVERSE)
         post_in_index = response_index.context['page_obj'][0]
         self.assertEqual(post_in_index, self.post)
         self.assertEqual(post_in_index.group, self.post.group)
 
         response_group_list = self.authorized_client.get(
-            reverse('posts:group_list', kwargs={'slug': self.group.slug})
+            self.GROUP_REVERSE
         )
         first_object = response_group_list.context['page_obj'][0]
         second_object = response_group_list.context['group']
@@ -136,7 +136,7 @@ class PostsPagesTests(TestCase):
         self.assertEqual(second_object, self.group)
 
         response_profile = self.authorized_client.get(
-            reverse('posts:profile', kwargs={'username': self.post.author}))
+            self.PROFILE_REVERSE)
         first_object = response_profile.context['page_obj'][0]
         self.assertEqual(first_object.text, self.post.text)
 
@@ -161,12 +161,15 @@ class PaginatorViewsTest(TestCase):
                  group=cls.group) for i in range(13)
         ]
         Post.objects.bulk_create(posts)
+        cls.GROUP_REVERSE = reverse('posts:group_list', args=[cls.group.slug])
+        cls.INDEX_REVERSE = reverse('posts:index')
+        cls.PROFILE_REVERSE = reverse('posts:profile', args=[cls.user])
 
     def test_first_page_contains_ten_records(self):
         templates_page_names = [
-            reverse('posts:index'),
-            reverse('posts:group_list', args=[self.group.slug]),
-            reverse('posts:profile', args=[self.user])
+            self.INDEX_REVERSE,
+            self.GROUP_REVERSE,
+            self.PROFILE_REVERSE,
         ]
         for reverse_name in templates_page_names:
             response = self.client.get(reverse_name)
@@ -175,9 +178,9 @@ class PaginatorViewsTest(TestCase):
     def test_second_page_contains_three_records(self):
         page = '?page=2'
         templates_page_names = [
-            reverse('posts:index') + page,
-            reverse('posts:group_list', args=[self.group.slug]) + page,
-            reverse('posts:profile', args=[self.user]) + page
+            self.INDEX_REVERSE + page,
+            self.GROUP_REVERSE + page,
+            self.PROFILE_REVERSE + page,
         ]
         for reverse_name in templates_page_names:
             response = self.client.get(reverse_name)

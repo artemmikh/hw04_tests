@@ -75,7 +75,7 @@ class PostCreateFormTests(TestCase):
             data=new_form_data,
             follow=True,
         )
-        modified_post = Post.objects.get(id=1)
+        modified_post = Post.objects.first()
         self.assertEqual(modified_post.text, new_form_data['text'])
 
     def test_guest_client_can_not_create_post(self):
