@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from posts.models import Group, Post
 
@@ -17,9 +18,21 @@ class PostsPagesTests(TestCase):
         super().setUpClass()
         cls.user = User.objects.create_user(username='TestUser')
         cls.group = Group.objects.create(
-            title='Тестовое название группы',
-            slug='group-slug',
-            description='Тестовое описание группы',
+            title='название группы',
+            slug='test-slug',
+            description='Описание группы',
+        )
+        cls.gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00'
+            b'\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00'
+            b'\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+        cls.image = SimpleUploadedFile(
+            name='small.gif',
+            content=cls.gif,
+            content_type='image/gif'
         )
         cls.post = Post.objects.create(
             author=cls.user,
@@ -67,6 +80,7 @@ class PostsPagesTests(TestCase):
         self.assertEqual(test_post.author, self.post.author)
         self.assertEqual(test_post.group, self.post.group)
         self.assertEqual(test_post.text, self.post.text)
+        self.assertEqual(test_post.image, self.post.image)
 
     def test_group_list_page_show_correct_context(self):
         """Шаблон group_list сформирован с правильным контекстом."""
@@ -78,20 +92,23 @@ class PostsPagesTests(TestCase):
         second_object = response.context['group']
         self.assertEqual(first_object, self.post)
         self.assertEqual(second_object, self.group)
+        self.assertEqual(first_object.image, self.post.image)
 
     def test_profile_page_show_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
         response = self.authorized_client.get(self.PROFILE_REVERSE)
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, self.post.text)
+        self.assertEqual(first_object.image, self.post.image)
 
     def test_post_detail_page_show_correct_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
         response = self.guest_client.get(self.POST_DETAIL_REVERSE)
-        test_post = response.context['post_pk']
+        test_post = response.context['post']
         self.assertEqual(test_post, self.post)
         self.assertEqual(test_post.author, self.post.author)
         self.assertEqual(test_post.text, self.post.text)
+        self.assertEqual(test_post.image, self.post.image)
 
     def test_post_create_page_show_correct_context(self):
         """Шаблон post_create сформирован с правильным контекстом."""
@@ -99,6 +116,7 @@ class PostsPagesTests(TestCase):
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
+            'image': forms.fields.ImageField,
         }
         for value, expected in form_fields.items():
             with self.subTest(value=value):

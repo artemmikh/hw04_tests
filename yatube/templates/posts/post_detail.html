@@ -1,7 +1,9 @@
 {% extends 'base.html' %} 
-{% load static %} 
+{% load static %}
+{% load thumbnail %}
+{% load user_filters %}
 {% block title %} 
-  Пост {{post_pk|stringformat:".30s" }} 
+  Пост {{post|stringformat:".30s" }} 
 {% endblock %} 
 {% block content %}
   <div class="container py-5">
@@ -9,20 +11,20 @@
       <aside class="col-12 col-md-3">
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            Дата публикации: {{ post_pk.pub_date|date:"d E Y" }}
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
           </li>
           <!-- если у поста есть группа -->
-          {% if post_pk.group %}
+          {% if post.group %}
           <li class="list-group-item">
             Группа: {{ post_id.group.title }}
             <!-- Название группы -->
-            <a href="{% url 'posts:group_list' post_pk.group.slug %}">
+            <a href="{% url 'posts:group_list' post.group.slug %}">
               все записи группы
             </a>
           </li>
           {% endif %}
           <li class="list-group-item">
-            Автор: {{ post_pk.author.get_full_name }}
+            Автор: {{ post.author.get_full_name }}
             <!--Лев Толстой-->
           </li>
           <li
@@ -31,19 +33,50 @@
             Всего постов автора: <span> {{count_post}} </span>
           </li>
           <li class="list-group-item">
-            <a href="{% url 'posts:profile' post_pk.author %}">
+            <a href="{% url 'posts:profile' post.author %}">
               все посты пользователя
             </a>
           </li>
         </ul>
       </aside>
       <article class="col-12 col-md-9">
-        <p>{{ post_pk }}</p>
-        {% if post_pk.author == user %}
-          <a class="btn btn-primary" href="{% url 'posts:post_edit' post_pk.id %}">
-            редактировать запись</a
-          >
+        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+          <img class="card-img my-2" src="{{ im.url }}">
+        {% endthumbnail %}
+        <p>{{ post }}</p>
+        {% if post.author == user %}
+          <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
+            редактировать запись</a>
         {% endif %}
+        {% if user.is_authenticated %}
+          <div class="card my-4">
+            <h5 class="card-header">Добавить комментарий:</h5>
+            <div class="card-body">
+              <form method="post" action="{% url 'posts:add_comment' post.id %}">
+                {% csrf_token %}      
+                <div class="form-group mb-2">
+                  {{ form.text|addclass:"form-control" }}
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+
+        {% for comment in comments %}
+          <div class="media mb-4">
+            <div class="media-body">
+              <h5 class="mt-0">
+                <a href="{% url 'posts:profile' comment.author.username %}">
+                  {{ comment.author.username }}
+                </a>
+              </h5>
+              <p>
+                {{ comment.text }}
+              </p>
+            </div>
+          </div>
+        {% endfor %} 
       </article>
     </div>
   </div>

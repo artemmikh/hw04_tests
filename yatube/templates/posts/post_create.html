@@ -12,7 +12,7 @@
           </div>
           <div class="card-body">
             {% load user_filters %} {# Загружаем фильтры #}
-            <form method="post" action="
+            <form method="post" enctype="multipart/form-data" action="
               {% if form.instance.pk %}
                 {% url 'posts:post_edit' form.instance.pk %}
               {% else %}

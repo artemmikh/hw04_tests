@@ -20,9 +20,9 @@ class PostURLTests(TestCase):
         cls.authorized_client.force_login(cls.user)
 
         cls.group = Group.objects.create(
-            title='Тестовая группа',
-            slug='Тестовый слаг',
-            description='Тестовое описание',
+            title='Тестовый заголовок группы',
+            slug='test_slug',
+            description='Тестовое описание группы',
         )
         cls.post = Post.objects.create(
             author=cls.user,

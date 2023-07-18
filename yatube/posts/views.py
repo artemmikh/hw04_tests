@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from core.pagination import paginate
 
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from .models import Group, Post
 
 User = get_user_model()
@@ -61,9 +61,13 @@ def post_detail(request, post_id):
 
     post = get_object_or_404(Post, pk=post_id)
     count_post = post.author.posts.count()
+    form = CommentForm(request.POST or None)
+    comments = post.comments.all()
     context = {
-        'post_pk': post,
+        'post': post,
         'count_post': count_post,
+        'form': form,
+        'comments': comments,
     }
 
     return render(request, 'posts/post_detail.html', context)
@@ -87,7 +91,11 @@ def post_edit(request, post_id):
     if request.user != post.author:
         return redirect('posts:post_detail', post_id)
 
-    form = PostForm(request.POST or None, instance=post)
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=post
+    )
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)
@@ -97,3 +105,15 @@ def post_edit(request, post_id):
         'post': post,
     }
     return render(request, 'posts/post_create.html', context)
+
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.post = post
+        comment.save()
+    return redirect('posts:post_detail', post_id=post_id)

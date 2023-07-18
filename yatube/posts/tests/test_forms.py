@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from posts.models import Group, Post
+
+from posts.models import Group, Post, Comment
 
 User = get_user_model()
 
@@ -16,6 +18,23 @@ class PostCreateFormTests(TestCase):
             title='Тестовое название группы',
             slug='group-slug',
             description='Тестовое описание группы',
+        )
+        cls.gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00'
+            b'\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00'
+            b'\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+        cls.image = SimpleUploadedFile(
+            name='gifff',
+            content=cls.gif,
+            content_type='image/gif'
+        )
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='text',
+            group=cls.group,
         )
 
     def setUp(self):
@@ -92,3 +111,30 @@ class PostCreateFormTests(TestCase):
         login_url = reverse('users:login')
         create_url = reverse('posts:post_create')
         self.assertRedirects(response, f'{login_url}?next={create_url}')
+
+    def test_guest_client_can_not_create_comment(self):
+        '''Неавторизованный пользователь
+        не может опубликовать комментарий.'''
+        form_data = {
+            'text': 'комментарий',
+        }
+        response = self.guest_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=form_data,
+        )
+        login_url = reverse('users:login')
+        create_url = reverse(
+            'posts:add_comment', kwargs={'post_id': self.post.id})
+        self.assertRedirects(response, f'{login_url}?next={create_url}')
+
+    def test_create_comment(self):
+        """После успешной отправки комментарий появляется
+        на странице поста."""
+        form_data = {
+            'text': 'комментарий',
+        }
+        self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=form_data,
+        )
+        self.assertEqual(form_data['text'], Comment.objects.first().text)

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Post
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -8,7 +8,7 @@ class PostForm(forms.ModelForm):
         # На основе какой модели создаётся класс формы
         model = Post
         # Укажем, какие поля будут в форме
-        fields = ('text', 'group',)
+        fields = ('text', 'group', 'image',)
         labels = {
             'text': 'Текст поста',
             'group': 'Группа',
@@ -17,9 +17,20 @@ class PostForm(forms.ModelForm):
         help_texts = {
             'text': 'Текст нового поста',
             'group': 'Группа, к которой будет относиться пост',
-            'image': 'Вы можете загрузить файл здесь',
         }
         empty_label = {
             'group': 'Пост без группы',
-            'image': 'Нет изображения',
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+
+        fields = ('text',)
+        labels = {
+            'text': 'Текст комментария',
+        }
+        help_texts = {
+            'text': 'Текст комментария',
         }
