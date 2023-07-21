@@ -158,6 +158,17 @@ class PostsPagesTests(TestCase):
         first_object = response_profile.context['page_obj'][0]
         self.assertEqual(first_object.text, self.post.text)
 
+    def test_index_page_cache(self):
+        """Данные главной страницы остаются в кеше."""
+        post = Post.objects.create(
+            text='test cache',
+            author=self.user
+        )
+        response_index = self.guest_client.get(self.INDEX_REVERSE).content
+        post.delete()
+        cache_index = self.guest_client.get(self.INDEX_REVERSE).content
+        self.assertEqual(response_index, cache_index)
+
 
 class PaginatorViewsTest(TestCase):
     @classmethod

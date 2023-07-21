@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from core.pagination import paginate
-
 from .forms import PostForm, CommentForm
 from .models import Group, Post
 
@@ -12,6 +11,7 @@ User = get_user_model()
 POSTS_PER_PAGE = settings.POSTS_PER_PAGE
 
 
+# @cache_page(20)
 def index(request):
     post_list = Post.objects.all()
     page_obj = paginate(
