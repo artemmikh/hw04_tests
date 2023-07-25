@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.cache import cache
 
 from posts.models import Group, Post
 
@@ -38,6 +39,7 @@ class PostsPagesTests(TestCase):
             author=cls.user,
             text='text',
             group=cls.group,
+            image=cls.image,
         )
         cls.GROUP_REVERSE = reverse('posts:group_list', args=[cls.group.slug])
         cls.INDEX_REVERSE = reverse('posts:index')
@@ -168,6 +170,8 @@ class PostsPagesTests(TestCase):
         post.delete()
         cache_index = self.guest_client.get(self.INDEX_REVERSE).content
         self.assertEqual(response_index, cache_index)
+        cache.clear()
+        self.assertIsNot(response_index, cache_index)
 
 
 class PaginatorViewsTest(TestCase):

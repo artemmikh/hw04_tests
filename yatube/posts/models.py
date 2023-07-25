@@ -72,3 +72,21 @@ class Comment(CreatedModel):
         'Текст коментария',
         help_text='Введите комментарий'
     )
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Пользователь, на которого подписываются'
+    )
+
+    def __str__(self):
+        return f'{self.user}'

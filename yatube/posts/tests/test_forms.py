@@ -19,16 +19,17 @@ class PostCreateFormTests(TestCase):
             slug='group-slug',
             description='Тестовое описание группы',
         )
-        cls.gif = (
-            b'\x47\x49\x46\x38\x39\x61\x01\x00'
-            b'\x01\x00\x00\x00\x00\x21\xf9\x04'
-            b'\x01\x0a\x00\x01\x00\x2c\x00\x00'
-            b'\x00\x00\x01\x00\x01\x00\x00\x02'
-            b'\x02\x4c\x01\x00\x3b'
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
-        cls.image = SimpleUploadedFile(
-            name='gifff',
-            content=cls.gif,
+        cls.uploaded = SimpleUploadedFile(
+            name='small.gif',
+            content=small_gif,
             content_type='image/gif'
         )
         cls.post = Post.objects.create(
@@ -44,11 +45,13 @@ class PostCreateFormTests(TestCase):
 
     def test_create_post(self):
         """Валидная форма создает запись в Post."""
+
         tasks_count = Post.objects.count()
         # Подготавливаем данные для передачи в форму
         form_data = {
             'text': 'test text',
             'group': self.group.id,
+            'image': self.uploaded,
         }
         # создаю пост
         response = self.authorized_client.post(
@@ -66,6 +69,13 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(form_data['text'], new_post.text)
         self.assertEqual(self.user, new_post.author)
         self.assertEqual(self.group, new_post.group)
+        self.assertTrue(
+            Post.objects.filter(
+                text=form_data['text'],
+                group=form_data['group'],
+                # image='posts/small.gif',
+            ).exists()
+        )
 
     def test_edit_post(self):
         """Валидная форма измененяет пост в базе данных."""

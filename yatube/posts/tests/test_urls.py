@@ -34,6 +34,7 @@ class PostURLTests(TestCase):
         cls.POST_DETAIL_URL = f'/posts/{cls.post.id}/'
         cls.POST_CREATE_URL = '/create/'
         cls.POST_EDIT_URL = f'/posts/{cls.post.id}/edit/'
+        cls.PAGE_NOT_FOUND_URL = '/щшргицзщшкегоцщшуен/'
 
         cls.guest_access = [
             cls.INDEX_URL,
@@ -77,7 +78,8 @@ class PostURLTests(TestCase):
             self.PROFILE_URL: 'posts/profile.html',
             self.POST_DETAIL_URL: 'posts/post_detail.html',
             self.POST_CREATE_URL: 'posts/post_create.html',
-            self.POST_EDIT_URL: 'posts/post_create.html'
+            self.POST_EDIT_URL: 'posts/post_create.html',
+            self.PAGE_NOT_FOUND_URL: 'core/404.html',
         }
 
         for url, template in templates_url_names.items():

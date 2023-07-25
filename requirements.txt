@@ -1,14 +1,25 @@
+attrs==23.1.0
+certifi==2023.5.7
+chardet==3.0.4
+Django==2.2.16
 django-debug-toolbar==2.2
-django==2.2.16
+Faker==12.0.1
+idna==2.8
+isort==5.12.0
+mixer==7.1.2
+more-itertools==9.1.0
+packaging==23.1
+Pillow==9.5.0
+pluggy==0.13.1
+py==1.11.0
+pytest==5.3.5
 pytest-django==3.8.0
 pytest-pythonpath==0.7.3
-pytest==5.3.5             # via pytest-django
+python-dateutil==2.8.2
+pytz==2023.3
 requests==2.22.0
-six==1.14.0               # via packaging
+six==1.14.0
 sorl-thumbnail==12.6.3
-mixer==7.1.2
-Faker==12.0.1
-
-pillow==9.5.0
-sorl-thumbnail==12.6.3
-isort==5.12.0
+sqlparse==0.4.4
+urllib3==1.25.11
+wcwidth==0.2.6
