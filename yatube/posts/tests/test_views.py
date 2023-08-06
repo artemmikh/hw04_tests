@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
 
-from posts.models import Group, Post
+from posts.models import Group, Post, Follow
 
 User = get_user_model()
 POSTS_PER_PAGE = settings.POSTS_PER_PAGE
@@ -51,11 +51,21 @@ class PostsPagesTests(TestCase):
         cls.POST_EDIT_REVERSE = reverse(
             'posts:post_edit', kwargs={'post_id': cls.post.id}
         )
+        cls.SUBSCRIBE_REVERSE = reverse(
+            'posts:profile_follow', args=[cls.user])
+        cls.UNSUBSCRIBE_REVERSE = reverse(
+            'posts:profile_unfollow', args=[cls.user])
+        cls.SUBSCRIPTIONS_REVERSE = reverse('posts:follow_index')
 
     def setUp(self):
+        self.follower = (
+            User.objects.create_user(username='follower!!!'))
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+
+        self.authorized_follower = Client()
+        self.authorized_follower.force_login(self.follower)
 
     # Проверяем используемые шаблоны
     def test_pages_uses_correct_template(self):
@@ -172,6 +182,42 @@ class PostsPagesTests(TestCase):
         self.assertEqual(response_index, cache_index)
         cache.clear()
         self.assertIsNot(response_index, cache_index)
+
+    def test_authorized_user_can_subscribe(self):
+        '''Авторизованный пользователь может подписываться на
+        других пользователей и удалять их из подписок.'''
+        self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
+        self.assertTrue(
+            Follow.objects.filter(user=self.follower,
+                                  author=self.user).exists()
+        )
+
+    def test_authorized_user_can_unsubscribe(self):
+        '''Авторизованный пользователь может
+        удалять пользователей из подписок.'''
+        self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
+        self.authorized_follower.get(self.UNSUBSCRIBE_REVERSE)
+        self.assertFalse(
+            Follow.objects.filter(user=self.follower,
+                                  author=self.user).exists()
+        )
+
+    def test_new_post_appears_in_subscriptions(self):
+        '''Новая запись пользователя появляется в ленте тех,
+        кто на него подписан.'''
+        # подписываюсь
+        self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
+        # захожу на страницу подписок
+        response = self.authorized_follower.get(self.SUBSCRIPTIONS_REVERSE)
+        object = response.context.get('page_obj')
+        self.assertIn(self.post, object)
+
+    def test_new_post_not_appears_in_subscriptions(self):
+        '''Новая запись пользователя не появляется
+        в ленте тех, кто не подписан.'''
+        response = self.authorized_follower.get(self.SUBSCRIPTIONS_REVERSE)
+        object = response.context.get('page_obj')
+        self.assertNotIn(self.post, object)
 
 
 class PaginatorViewsTest(TestCase):

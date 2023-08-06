@@ -3,12 +3,11 @@
 {% load cache %}
 {% load thumbnail %}
 {% block title %}
-  Последние обновления на сайте
+  Подписки
 {% endblock %}
 {% block content %}
   <div class="container py-5">
     {% cache 20 index_page %}
-      {% include 'posts/includes/switcher.html' %} 
       {% for post in page_obj %}
         <article>
           <ul>
