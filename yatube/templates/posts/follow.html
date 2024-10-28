@@ -7,7 +7,9 @@
 {% endblock %}
 {% block content %}
   <div class="container py-5">
-    {% cache 20 index_page %}
+    {% if no_follows %}
+      <p>Вы пока ни на кого не подписаны.</p>
+    {% else %}
       {% for post in page_obj %}
         <article>
           <ul>
@@ -23,14 +25,14 @@
             <img class="card-img my-2" src="{{ im.url }}">
           {% endthumbnail %}
             <p>{{ post.text }}</p>
-          <a href="{% url 'posts:post_detail' post.id %}">Подробная информация</a> 
-        </article> 
-          {% if post.group %}  
+          <a href="{% url 'posts:post_detail' post.id %}">Подробная информация</a>
+        </article>
+        {% if post.group %}
             <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
           {% endif %}
           {% if not forloop.last %}<hr>{% endif %}
       {% endfor %}
-    {% endcache %}
+    {% endif %}
     {% include 'posts/includes/paginator.html' %}
   </div>
-{% endblock %}  
+{% endblock %}

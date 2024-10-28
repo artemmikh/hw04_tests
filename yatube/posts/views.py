@@ -61,7 +61,6 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-
     post = get_object_or_404(Post, pk=post_id)
     count_post = post.author.posts.count()
     form = CommentForm(request.POST or None)
@@ -78,7 +77,6 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-
     form = PostForm(
         request.POST or None,
         files=request.FILES or None,
@@ -137,6 +135,7 @@ def follow_index(request):
     )
     context = {
         'page_obj': page_obj,
+        'no_follows': not posts.exists()
     }
     return render(request, 'posts/follow.html', context)
 
