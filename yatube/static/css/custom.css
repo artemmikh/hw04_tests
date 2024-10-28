@@ -1,0 +1,27 @@
+.navbar-light .nav-link.active {
+    background-color: #e1e1e1;
+    color: #262625;
+}
+
+.btn-primary {
+    background-color: #729f74;
+    border-color: #729f74;
+}
+
+
+.page-link {
+    color: #262625; /* Цвет текста обычных кнопок */
+    background-color: #F5F5F5; /* Цвет фона обычных кнопок */
+    border-color: #F5F5F5; /* Цвет границы */
+}
+
+.page-link:hover {
+    color: #262625; /* Цвет текста при наведении */
+    background-color: #eeeeee; /* Фон при наведении */
+}
+
+.page-item.active .page-link {
+    color: #262625; /* Цвет текста активной кнопки */
+    background-color: #e1e1e1; /* Фон активной кнопки */
+    border-color: #e1e1e1; /* Цвет границы активной кнопки */
+}

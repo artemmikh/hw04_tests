@@ -1,52 +1,50 @@
-{% load static %} 
-<nav class="navbar navbar-light" style="background-color: lightskyblue">
+{% load static %}
+<nav class="navbar navbar-light" style="background-color: whitesmoke">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'posts:index' %}">
-      <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-      <span style="color:red">Ya</span>tube
+      <!-- Добавляем d-flex и align-items-center к контейнеру с логотипом и текстом -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'posts:index' %}">
+          <img src="{% static 'img/logo.png' %}" width="60" height="60" class="d-inline-block align-top" alt="">
+          <span style="margin-left: 10px; color: #262625;">сейчас</span> <!-- Отступ перед текстом в пикселях -->
     </a>
-    {% comment %}
-    Меню - список пунктов со стандартными классами Bootsrap.
-    Класс nav-pills нужен для выделения активных пунктов 
-    {% endcomment %}
-    {% with request.resolver_match.view_name as view_name %}  
+      {% with request.resolver_match.view_name as view_name %}
     <ul class="nav nav-pills">
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'about:author' %}active{% endif %}" 
+        <li class="nav-item">
+            <a class="nav-link {% if view_name  == 'about:author' %}active{% endif %}"
            href="{% url 'about:author' %}"
+               style="color: #262625;"
         >
-        Об авторе 
+                Об авторе
         </a>
       </li>
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'about:tech' %}active{% endif %}" 
+        <li class="nav-item">
+            <a class="nav-link {% if view_name  == 'about:tech' %}active{% endif %}"
            href="{% url 'about:tech' %}"
+               style="color: #262625;"
         >
         Технологии
         </a>
       </li>
-      <!-- Проверка: авторизован ли пользователь? -->
       {% if request.user.is_authenticated %}
-      {% comment %} <li class="nav-item"> 
-        <a class="nav-link" href="<!--  -->">Новая запись</a>
-      </li> {% endcomment %}
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'posts:post_create' %}active{% endif %}" 
+          <li class="nav-item">
+              <a class="nav-link {% if view_name  == 'posts:post_create' %}active{% endif %}"
            href="{% url 'posts:post_create' %}"
+                 style="color: #262625;"
         >
         Новая запись
         </a>
       </li>
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'users:password_change' %}active{% endif %}" 
+          <li class="nav-item">
+              <a class="nav-link {% if view_name  == 'users:password_change' %}active{% endif %}"
            href="{% url 'users:password_change' %}"
+                 style="color: #262625;"
         >
         Изменить пароль
         </a>
       </li>
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'users:logout' %}active{% endif %}" 
+          <li class="nav-item">
+              <a class="nav-link {% if view_name  == 'users:logout' %}active{% endif %}"
            href="{% url 'users:logout' %}"
+                 style="color: #262625;"
         >
           Выйти
         </a>
@@ -55,16 +53,18 @@
         Пользователь: {{ user.username }}
       </li>
       {% else %}
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'users:login' %}active{% endif %}" 
+          <li class="nav-item">
+              <a class="nav-link {% if view_name  == 'users:login' %}active{% endif %}"
            href="{% url 'users:login' %}"
+                 style="color: #262625;"
         >
           Войти
         </a>
       </li>
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'users:signup' %}active{% endif %}" 
+          <li class="nav-item">
+              <a class="nav-link {% if view_name  == 'users:signup' %}active{% endif %}"
            href="{% url 'users:signup' %}"
+                 style="color: #262625;"
         >
           Регистрация
         </a>
@@ -73,5 +73,4 @@
     </ul>
     {% endwith %}
   </div>
-</nav>      
-
+</nav>
