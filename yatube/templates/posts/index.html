@@ -16,24 +16,32 @@
       {% for post in page_obj %}
         <div class="col-md-8 mx-auto mb-4">
           <article>
-            <ul>
+            <ul class="list-unstyled">
               <li>
-                Автор: {{ post.author.get_full_name }}
-                <a href="{% url 'posts:profile' post.author.username %}">все посты пользователя</a>
+                {{ post.author.get_full_name }}
               </li>
               <li>
-                Дата публикации: {{ post.pub_date|date:"d E Y" }}
+                {{ post.pub_date|date:"d E Y" }}
               </li>
             </ul>
             {% thumbnail post.image "960x600" crop="center" upscale=True as im %}
               <img class="card-img my-2 img-fluid" src="{{ im.url }}" style="width: 100%; height: auto;">
             {% endthumbnail %}
             <p>{{ post.text }}</p>
-            <a href="{% url 'posts:post_detail' post.id %}">Подробная информация</a>
           </article>
-          {% if post.group %}
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
+          <ul class="list-unstyled">
+            <li>
+              <a href="{% url 'posts:post_detail' post.id %}"> подробная информация</a>
+            </li>
+            <li>
+              {% if post.group %}
+                <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
+              {% endif %}
+            </li>
+            <li>
+              <a href="{% url 'posts:profile' post.author.username %}">все посты пользователя</a>
+            </li>
+          </ul>
           {% if not forloop.last %}
             <hr>{% endif %}
         </div>
@@ -46,6 +54,5 @@
         </div>
       </div>
     </div>
-
   </div>
 {% endblock %}
