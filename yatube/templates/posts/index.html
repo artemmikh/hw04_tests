@@ -7,7 +7,11 @@
 {% endblock %}
 {% block content %}
   <div class="container py-5">
-    {% include 'posts/includes/switcher.html' %}
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        {% include 'posts/includes/switcher.html' %}
+      </div>
+    </div>
     <div class="row">
       {% for post in page_obj %}
         <div class="col-md-8 mx-auto mb-4">

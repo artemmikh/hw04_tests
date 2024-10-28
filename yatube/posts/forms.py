@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Post, Comment
+from .models import Post, Comment, Group
 
 
 class PostForm(forms.ModelForm):
@@ -21,6 +21,15 @@ class PostForm(forms.ModelForm):
         empty_label = {
             'group': 'Пост без группы',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            # Замените 'your_group_id' на ID группы, которую хотите установить по умолчанию
+            self.fields['group'].initial = Group.objects.get(id=4)
+        except Group.DoesNotExist:
+            # Если группа не найдена, можно оставить поле пустым
+            self.fields['group'].initial = None
 
 
 class CommentForm(forms.ModelForm):

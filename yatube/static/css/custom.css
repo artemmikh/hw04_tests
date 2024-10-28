@@ -8,6 +8,15 @@
     border-color: #729f74;
 }
 
+.btn-primary:hover {
+    background-color: #729f74; /* Цвет кнопки при наведении */
+    border-color: #729f74; /* Цвет рамки при наведении */
+}
+
+.btn-primary:active {
+    background-color: #729f74 !important;
+    border-color: #729f74 !important;
+}
 
 .page-link {
     color: #262625; /* Цвет текста обычных кнопок */
@@ -24,4 +33,30 @@
     color: #262625; /* Цвет текста активной кнопки */
     background-color: #e1e1e1; /* Фон активной кнопки */
     border-color: #e1e1e1; /* Цвет границы активной кнопки */
+}
+
+
+.nav-tabs .nav-link {
+    color: #262625; /* Цвет для неактивных вкладок */
+}
+
+.nav-tabs .nav-link.active {
+    color: #e1e1e1; /* Цвет для активной вкладки */
+    background-color: #e1e1e1; /* Цвет фона для активной вкладки */
+    border-color: #e1e1e1; /* Цвет границы для активной вкладки */
+}
+
+.nav-tabs .nav-link:hover {
+    color: #262625; /* Цвет для текста при наведении на неактивные вкладки */
+    background-color: #eeeeee; /* Цвет фона при наведении */
+}
+
+
+a {
+    color: #7d8ac2; /* Цвет ссылок */
+}
+
+/* Цвет ссылок при наведении */
+a:hover {
+    color: #7786cb; /* Цвет ссылок при наведении */
 }
