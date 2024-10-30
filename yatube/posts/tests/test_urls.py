@@ -46,13 +46,13 @@ class PostURLTests(TestCase):
         ]
 
     def test_guest_access_url_exists_at_desired_location(self):
-        '''Проверяем общедоступные страницы.'''
+        """Проверяем общедоступные страницы."""
         for i in self.guest_access:
             response = self.guest_client.get(i)
             self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_authorized_access_url_exists_at_desired_location(self):
-        '''Проверяем страницы доступные только авторизованному.'''
+        """Проверяем страницы доступные только авторизованному."""
         for i in self.authorized_access:
             response = self.authorized_client.get(i)
             self.assertEqual(response.status_code, HTTPStatus.OK)

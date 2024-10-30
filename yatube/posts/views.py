@@ -11,7 +11,6 @@ User = get_user_model()
 POSTS_PER_PAGE = settings.POSTS_PER_PAGE
 
 
-# @cache_page(20)
 def index(request):
     post_list = Post.objects.all()
     page_obj = paginate(
@@ -125,8 +124,8 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    '''Страница, куда будут выведены посты авторов,
-    на которых подписан текущий пользователь.'''
+    """Страница, куда будут выведены посты авторов,
+    на которых подписан текущий пользователь."""
     posts = Post.objects.filter(author__following__user=request.user)
     page_obj = paginate(
         request,
@@ -142,7 +141,7 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    '''Подписка на автора.'''
+    """Подписка на автора."""
     author = get_object_or_404(User, username=username)
     if request.user == author:
         return redirect('posts:profile', author)
@@ -152,7 +151,7 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    '''Отписка от автора.'''
+    """Отписка от автора."""
     author = get_object_or_404(User, username=username)
     if request.user == author:
         return redirect('posts:profile', author)

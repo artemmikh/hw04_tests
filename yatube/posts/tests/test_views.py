@@ -183,8 +183,8 @@ class PostsPagesTests(TestCase):
         self.assertIsNot(response_index, cache_index)
 
     def test_authorized_user_can_subscribe(self):
-        '''Авторизованный пользователь может подписываться на
-        других пользователей и удалять их из подписок.'''
+        """Авторизованный пользователь может подписываться на
+        других пользователей и удалять их из подписок."""
         self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
         self.assertTrue(
             Follow.objects.filter(user=self.follower,
@@ -192,8 +192,8 @@ class PostsPagesTests(TestCase):
         )
 
     def test_authorized_user_can_unsubscribe(self):
-        '''Авторизованный пользователь может
-        удалять пользователей из подписок.'''
+        """Авторизованный пользователь может
+        удалять пользователей из подписок."""
         self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
         self.authorized_follower.get(self.UNSUBSCRIBE_REVERSE)
         self.assertFalse(
@@ -202,16 +202,16 @@ class PostsPagesTests(TestCase):
         )
 
     def test_new_post_appears_in_subscriptions(self):
-        '''Новая запись пользователя появляется в ленте тех,
-        кто на него подписан.'''
+        """Новая запись пользователя появляется в ленте тех,
+        кто на него подписан."""
         self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
         response = self.authorized_follower.get(self.SUBSCRIPTIONS_REVERSE)
         object = response.context.get('page_obj')
         self.assertIn(self.post, object)
 
     def test_new_post_not_appears_in_subscriptions(self):
-        '''Новая запись пользователя не появляется
-        в ленте тех, кто не подписан.'''
+        """Новая запись пользователя не появляется
+        в ленте тех, кто не подписан."""
         response = self.authorized_follower.get(self.SUBSCRIPTIONS_REVERSE)
         object = response.context.get('page_obj')
         self.assertNotIn(self.post, object)

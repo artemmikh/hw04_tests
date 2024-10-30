@@ -100,7 +100,7 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(modified_post.text, new_form_data['text'])
 
     def test_guest_client_can_not_create_post(self):
-        '''Неавторизованный пользователь не может опубликовать пост.'''
+        """Неавторизованный пользователь не может опубликовать пост."""
         form_data = {
             'text': 'test text',
             'group': self.group.id
@@ -115,8 +115,8 @@ class PostCreateFormTests(TestCase):
         self.assertRedirects(response, f'{login_url}?next={create_url}')
 
     def test_guest_client_can_not_create_comment(self):
-        '''Неавторизованный пользователь
-        не может опубликовать комментарий.'''
+        """Неавторизованный пользователь
+        не может опубликовать комментарий."""
         form_data = {
             'text': 'комментарий',
         }
