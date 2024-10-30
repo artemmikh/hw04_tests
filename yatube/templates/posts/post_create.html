@@ -11,7 +11,7 @@
             {% if form.instance.pk %}Редактировать пост{% else %}Новый пост{% endif %}            
           </div>
           <div class="card-body">
-            {% load user_filters %} {# Загружаем фильтры #}
+            {% load user_filters %}
             <form method="post" enctype="multipart/form-data" action="
               {% if form.instance.pk %}
                 {% url 'posts:post_edit' form.instance.pk %}

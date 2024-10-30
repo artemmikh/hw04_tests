@@ -13,11 +13,9 @@
           <li class="list-group-item">
             Дата публикации: {{ post.pub_date|date:"d E Y" }}
           </li>
-          <!-- если у поста есть группа -->
           {% if post.group %}
           <li class="list-group-item">
             Группа: {{ post_id.group.title }}
-            <!-- Название группы -->
             <a href="{% url 'posts:group_list' post.group.slug %}">
               все записи группы
             </a>
@@ -25,7 +23,6 @@
           {% endif %}
           <li class="list-group-item">
             Автор: {{ post.author.get_full_name }}
-            <!--Лев Толстой-->
           </li>
           <li
             class="list-group-item d-flex justify-content-between align-items-center"

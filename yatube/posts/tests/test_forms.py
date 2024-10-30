@@ -3,7 +3,6 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-
 from posts.models import Group, Post, Comment
 
 User = get_user_model()
@@ -47,24 +46,20 @@ class PostCreateFormTests(TestCase):
         """Валидная форма создает запись в Post."""
 
         tasks_count = Post.objects.count()
-        # Подготавливаем данные для передачи в форму
         form_data = {
             'text': 'test text',
             'group': self.group.id,
             'image': self.uploaded,
         }
-        # создаю пост
         response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
         new_post = Post.objects.first()
-        # Проверяем, сработал ли редирект
         self.assertRedirects(response, reverse(
             'posts:profile', kwargs={'username': new_post.author})
-        )
-        # Проверяем, увеличилось ли число постов
+                             )
         self.assertEqual(Post.objects.count(), tasks_count + 1)
         self.assertEqual(form_data['text'], new_post.text)
         self.assertEqual(self.user, new_post.author)
@@ -73,7 +68,6 @@ class PostCreateFormTests(TestCase):
             Post.objects.filter(
                 text=form_data['text'],
                 group=form_data['group'],
-                # image='posts/small.gif',
             ).exists()
         )
 
@@ -83,13 +77,11 @@ class PostCreateFormTests(TestCase):
             'text': 'test text',
             'group': self.group.id
         }
-        # создание поста
         self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True,
         )
-        # редактирование поста
         post = Post.objects.first()
         new_form_data = {
             'text': 'new test texst',

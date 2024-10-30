@@ -67,7 +67,6 @@ class PostsPagesTests(TestCase):
         self.authorized_follower = Client()
         self.authorized_follower.force_login(self.follower)
 
-    # Проверяем используемые шаблоны
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_page_names = {
@@ -205,9 +204,7 @@ class PostsPagesTests(TestCase):
     def test_new_post_appears_in_subscriptions(self):
         '''Новая запись пользователя появляется в ленте тех,
         кто на него подписан.'''
-        # подписываюсь
         self.authorized_follower.get(self.SUBSCRIBE_REVERSE)
-        # захожу на страницу подписок
         response = self.authorized_follower.get(self.SUBSCRIPTIONS_REVERSE)
         object = response.context.get('page_obj')
         self.assertIn(self.post, object)

@@ -5,10 +5,10 @@
   Профайл пользователя {{ author.get_full_name }}
 {% endblock %}
 {% block content %}
-  <div class="container mb-5 mt-5">  <!-- Добавлен отступ сверху -->
+  <div class="container mb-5 mt-5">
     <h3 class="text">Все посты пользователя {{ author.get_full_name }} </h3>
     <h5 class="text">Всего постов: {{ posts_count }} </h5>
-    <div class="text mb-4">  <!-- Центрирование кнопок -->
+    <div class="text mb-4">
       {% if following %}
         <a class="btn btn-sm btn-light" href="{% url 'posts:profile_unfollow' author.username %}" role="button">
           Отписаться
@@ -33,7 +33,6 @@
         </ul>
         {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
           <img class="card-img my-2 img-fluid" src="{{ im.url }}" style="width: 100%; height: auto;">
-          <!-- Измените размеры изображения -->
         {% endthumbnail %}
         <p>
           {{ post.text }}
@@ -44,7 +43,7 @@
             <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы<br> </a>
           </div>
         {% endif %}
-        <hr>  <!-- Перенесён внутрь цикла -->
+        <hr>
       {% endfor %}
     </article>
 
@@ -56,5 +55,5 @@
       </div>
     </div>
 
-  </div>  <!-- Закрытие контейнера -->
+  </div>
 {% endblock %}
